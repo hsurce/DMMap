@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="StartVBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.StartController">
+  <children>
+    <MenuBar fx:id="StartMenuBar" VBox.vgrow="NEVER">
+      <menus>
+        <Menu fx:id="StartMenuFile" mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem fx:id="MenuNew" mnemonicParsing="false" text="New" />
+            <MenuItem fx:id="MenuOpen" mnemonicParsing="false" text="Open…" />
+            <Menu mnemonicParsing="false" text="Open Recent" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="MenuClose" mnemonicParsing="false" text="Close" />
+            <MenuItem fx:id="MenuSave" mnemonicParsing="false" text="Save" />
+            <MenuItem fx:id="MenuSaveAs" mnemonicParsing="false" text="Save As…" />
+            <MenuItem mnemonicParsing="false" text="Revert" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Preferences…" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="MenuQuit" mnemonicParsing="false" text="Quit" />
+          </items>
+        </Menu>
+        <Menu fx:id="StartMenuHelp" mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+      <StackPane fx:id="StartLayoutStackPane" prefHeight="150.0" prefWidth="200.0">
+         <children>
+            <ImageView fx:id="StartLayoutImageView" fitHeight="565.0" fitWidth="1000.0" pickOnBounds="true" preserveRatio="true" />
+        <Label fx:id="StartLayoutTempLabel" alignment="CENTER" style="&#10;" text="Choose a new file..." textAlignment="CENTER" textFill="#9f9f9f" wrapText="false">
+          <font>
+            <Font size="18.0" />
+          </font>
+        </Label>
+         </children>
+      </StackPane>
+  </children>
+</VBox>

@@ -1,5 +1,6 @@
 package Controllers;
 
+import Popups.TownPopupController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -17,6 +19,8 @@ public class main extends Application {
     private double x,y;
     private double positionX = 0;
     private double positionY = 0;
+    private GlobalController globalController;
+    private TownPopupController townPopupController;
     public static void main(String[] args){
     launch(args);
     }
@@ -25,10 +29,20 @@ public class main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(accessFXMLFile("StartLayout.fxml"));
         Parent startroot = fxmlLoader.load();
         startController = fxmlLoader.getController();
+        loadFXMLFiles();
+
+        globalController = new GlobalController(townPopupController);
         primaryStage.setScene(new Scene(startroot));
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.show();
-        startController.initialize(primaryStage);
+        startController.initialize(primaryStage, globalController);
+        townPopupController.initialize(globalController);
+    }
+
+    private void loadFXMLFiles() throws IOException {
+        FXMLLoader townPopupLoader = new FXMLLoader(accessFXMLFile("TownPopupLayout.fxml"));
+        Parent townpopuproot = townPopupLoader.load();
+        townPopupController = (TownPopupController)townPopupLoader.getController();
     }
 
     /**

@@ -5,6 +5,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -39,7 +40,7 @@
     </MenuBar>
       <StackPane fx:id="StartLayoutStackPane" prefHeight="150.0" prefWidth="200.0">
          <children>
-            <ImageView fx:id="StartLayoutImageView" fitHeight="565.0" fitWidth="1000.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="StartLayoutImageView" fitHeight="716.0" fitWidth="1000.0" pickOnBounds="true" preserveRatio="true" />
         <Label fx:id="StartLayoutTempLabel" alignment="CENTER" style="&#10;" text="Choose a new file..." textAlignment="CENTER" textFill="#9f9f9f" wrapText="false">
           <font>
             <Font size="18.0" />
@@ -47,5 +48,7 @@
         </Label>
          </children>
       </StackPane>
+      <ToggleButton fx:id="StartLayoutToggleSet" mnemonicParsing="false" text="Toggle set new town..." translateX="439.0" />
+      <ToggleButton fx:id="StartLayoutToggleLookup" mnemonicParsing="false" text="Toggle look at nearest town..." translateX="420.0" translateY="5.0" />
   </children>
 </VBox>

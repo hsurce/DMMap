@@ -1,17 +1,18 @@
 package Controllers;
 
+import ItemSkeletons.Town;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -19,6 +20,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 public class StartController {
 
@@ -53,6 +55,12 @@ public class StartController {
     private Menu StartMenuHelp;
 
     @FXML
+    private ToggleButton StartLayoutToggleSet;
+
+    @FXML
+    private ToggleButton StartLayoutToggleLookup;
+
+    @FXML
     private Label StartLayoutTempLabel;
 
     @FXML
@@ -65,12 +73,33 @@ public class StartController {
     Stage curStage;
     double imageWidth;
     double imageHeight;
+    private boolean setCoordinate = false;
+    private boolean readTownNearCursor = false;
+    private ArrayList<Town> townList;
+    private GlobalController globalController;
 
-    public void initialize(Stage stage){
+    public void initialize(Stage stage, GlobalController globalController){
         curStage = stage;
+        this.globalController = globalController;
         initiateOnMenuClicked();
+        initiateToggleButtons();
 
 
+    }
+
+    private void initiateToggleButtons() {
+        StartLayoutToggleLookup.setOnAction(e -> {
+            if(StartLayoutToggleLookup.isSelected()){
+                readTownNearCursor = true;
+            }
+            else readTownNearCursor = false;
+        });
+        StartLayoutToggleSet.setOnAction(e -> {
+            if(StartLayoutToggleSet.isSelected()){
+                setCoordinate = true;
+            }
+            else setCoordinate = false;
+        });
     }
 
     private void initiateZoomAndPanImageView() {
@@ -222,7 +251,9 @@ public class StartController {
             imageWidth = image.getWidth();
             StartLayoutImageView.setImage(image);
             initiateZoomAndPanImageView();
-            initiateCreateButton();
+            initiateCreateOrLookupCoordinate();
+            StartLayoutTempLabel.setVisible(false);
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -231,29 +262,40 @@ public class StartController {
 
     }
 
-    private void initiateCreateButton() {
+    private void initiateCreateOrLookupCoordinate() {
         StartLayoutImageView.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
-                Point2D destination = imageViewToImage(StartLayoutImageView, new Point2D(e.getX(), e.getY()));
-                System.out.println(destination.getX());
-                Button b = createButton(destination.getX(), destination.getY());
-                StartLayoutStackPane.getChildren().add(b);
-                b.setVisible(true);
+            Point2D destination = imageViewToImage(StartLayoutImageView, new Point2D(e.getX(), e.getY()));
+            if (e.getClickCount() == 2 && setCoordinate) {
+                PixelReader reader = StartLayoutImageView.getImage().getPixelReader();
+
+                int previewWidthHeight = 500;
+                int imageXCoord = (int)destination.getX() - previewWidthHeight/2;
+                int imageYCoord = (int)destination.getY() - previewWidthHeight/2;
+                if(imageXCoord < 0)imageXCoord = 0;
+                if(imageYCoord < 0)imageYCoord = 0;
+                WritableImage previewImage = new WritableImage(reader,imageXCoord,imageYCoord, previewWidthHeight, previewWidthHeight);
+                Town town = new Town(destination, previewImage);
+                globalController.getTownPopupController().createPopup(town);
+                globalController.getTownPopupController().show();
+
+            }
+            if (e.getClickCount() == 2 && readTownNearCursor){
+                if(globalController.getTowns() != null){
+                    double shortestDistance = -1;
+                    Town closestTown = null;
+                    for(Town town: globalController.getTowns()){
+                        if(destination.distance(town.getTownCoordinate()) < shortestDistance || shortestDistance == -1){
+                            shortestDistance = destination.distance(town.getTownCoordinate());
+                            closestTown = town;
+                        }
+                    }
+                    globalController.getTownPopupController().createPopup(closestTown);
+                    globalController.getTownPopupController().show();
+
+                }
             }
         });
     }
 
-    private Button createButton(double x, double y) {
-        final Button killButton = new Button("Kill the evil witch");
-        killButton.setStyle("-fx-base: firebrick;");
-        killButton.setTranslateX(x);
-        killButton.setTranslateY(y);
-        killButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent t) {
-                killButton.setStyle("-fx-base: forestgreen;");
-                killButton.setText("Ding-Dong! The Witch is Dead");
-            }
-        });
-        return killButton;
-    }
+
 }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="TownPopupAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Popups.TownPopupController">
+   <children>
+      <ImageView fx:id="TownPopupImageView" fitHeight="150.0" fitWidth="150.0" layoutX="361.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+      <TextField fx:id="TownPopupNameTextField" layoutX="14.0" layoutY="14.0" maxHeight="1.7976931348623157E308" promptText="Town name..." />
+      <TextArea fx:id="TownPopupNotesTextArea" layoutX="22.0" layoutY="194.0" maxHeight="1000.0" prefHeight="375.0" prefWidth="410.0" promptText="Skriv noter her..." text="&#10;" />
+      <Label layoutX="22.0" layoutY="164.0" prefHeight="32.0" prefWidth="77.0" text="Notes">
+         <font>
+            <Font name="System Bold Italic" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="450.0" layoutY="176.0" prefHeight="32.0" prefWidth="166.0" text="Environments">
+         <font>
+            <Font name="System Bold Italic" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="450.0" layoutY="365.0" prefHeight="32.0" prefWidth="166.0" text="Trade Routes">
+         <font>
+            <Font name="System Bold Italic" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="450.0" layoutY="246.0" prefHeight="18.0" prefWidth="118.0" text="Add environment...">
+         <font>
+            <Font name="System Bold Italic" size="12.0" />
+         </font>
+      </Label>
+      <Button fx:id="TownPopupAddEnvironmentButton" layoutX="627.0" layoutY="275.0" mnemonicParsing="false" text="Add" />
+      <Label layoutX="456.0" layoutY="229.0" text="(You can delete environment by using [DEL] with an environment highlighted)" />
+      <ChoiceBox fx:id="TownPopupTradeRouteChoiceBox" layoutX="450.0" layoutY="421.0" prefHeight="25.0" prefWidth="166.0" />
+      <Label layoutX="450.0" layoutY="404.0" prefHeight="17.0" prefWidth="177.0" text="Choose town to connect with:" />
+      <Label layoutX="450.0" layoutY="455.0" prefHeight="17.0" prefWidth="166.0" text="Relationship of trade route:" />
+      <ChoiceBox fx:id="TownPopupRelationshipChoiceBox" layoutX="450.0" layoutY="472.0" prefHeight="25.0" prefWidth="49.0" />
+      <Label layoutX="667.0" layoutY="246.0" prefHeight="18.0" prefWidth="221.0" text="List of environments connected to town">
+         <font>
+            <Font name="System Bold Italic" size="12.0" />
+         </font>
+      </Label>
+      <ChoiceBox fx:id="TownPopupAddEnvironmentChoiceBox" layoutX="452.0" layoutY="275.0" prefHeight="25.0" prefWidth="166.0" />
+      <Button fx:id="TownPopupAddTradeRouteButton" layoutX="627.0" layoutY="421.0" mnemonicParsing="false" text="Add" />
+      <Button fx:id="TownPopupSaveButton" layoutX="755.0" layoutY="27.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="45.0" text="Save" />
+      <Button fx:id="TownPopupCloseButton" layoutX="829.0" layoutY="27.0" mnemonicParsing="false" text="Close" />
+      <TableView fx:id="TownPopupResourceYieldTableView" layoutX="678.0" layoutY="265.0" prefHeight="150.0" prefWidth="200.0">
+        <columns>
+          <TableColumn prefWidth="132.0" text="Resource" />
+          <TableColumn minWidth="0.0" prefWidth="67.0" text="Yield" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

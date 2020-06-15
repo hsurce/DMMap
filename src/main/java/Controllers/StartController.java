@@ -1,5 +1,6 @@
 package Controllers;
 
+import ItemSkeletons.Point2DSerializable;
 import ItemSkeletons.Town;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -11,16 +12,19 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
+import java.io.*;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Optional;
+
+import static com.sun.org.apache.xalan.internal.lib.ExsltStrings.split;
 
 public class StartController {
 
@@ -40,19 +44,10 @@ public class StartController {
     private MenuItem MenuOpen;
 
     @FXML
-    private MenuItem MenuClose;
-
-    @FXML
     private MenuItem MenuSave;
 
     @FXML
-    private MenuItem MenuSaveAs;
-
-    @FXML
     private MenuItem MenuQuit;
-
-    @FXML
-    private Menu StartMenuHelp;
 
     @FXML
     private ToggleButton StartLayoutToggleSet;
@@ -68,6 +63,10 @@ public class StartController {
 
     @FXML
     private ImageView StartLayoutImageView;
+
+    @FXML
+    private TextField townSearchBar;
+
     final DoubleProperty zoomProperty = new SimpleDoubleProperty(200);
     private static final int MIN_PIXELS = 10;
     Stage curStage;
@@ -77,28 +76,37 @@ public class StartController {
     private boolean readTownNearCursor = false;
     private ArrayList<Town> townList;
     private GlobalController globalController;
+    private ArrayList<String> mapChoices = new ArrayList<>();
+    private String dirPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 
-    public void initialize(Stage stage, GlobalController globalController){
+    public void initialize(Stage stage, GlobalController globalController) {
         curStage = stage;
         this.globalController = globalController;
         initiateOnMenuClicked();
         initiateToggleButtons();
-
-
+        giveReferencesToGlobalController();
     }
+
+    private void giveReferencesToGlobalController() {
+        globalController.setTownsSearchBar(townSearchBar);
+        globalController.setStartLayoutImageView(StartLayoutImageView);
+    }
+
 
     private void initiateToggleButtons() {
         StartLayoutToggleLookup.setOnAction(e -> {
-            if(StartLayoutToggleLookup.isSelected()){
+            if (StartLayoutToggleLookup.isSelected()) {
                 readTownNearCursor = true;
-            }
-            else readTownNearCursor = false;
+                StartLayoutToggleSet.setSelected(false);
+                setCoordinate = false;
+            } else readTownNearCursor = false;
         });
         StartLayoutToggleSet.setOnAction(e -> {
-            if(StartLayoutToggleSet.isSelected()){
+            if (StartLayoutToggleSet.isSelected()) {
                 setCoordinate = true;
-            }
-            else setCoordinate = false;
+                StartLayoutToggleLookup.setSelected(false);
+                readTownNearCursor = false;
+            } else setCoordinate = false;
         });
     }
 
@@ -175,7 +183,6 @@ public class StartController {
         });
 
 
-
         //StartLayoutImageView.fitWidthProperty().bind(StartLayoutAnchorPane.widthProperty());
         //StartLayoutImageView.fitHeightProperty().bind(StartLayoutAnchorPane.heightProperty());
 
@@ -227,25 +234,105 @@ public class StartController {
     }
 
 
-    public void initiateOnMenuClicked(){
+    public void initiateOnMenuClicked() {
+        MenuNew.setOnAction(e -> MenuNewAction());
         MenuOpen.setOnAction(e -> MenuOpenAction());
     }
 
     private void MenuOpenAction() {
+        /**
+         * Popup vindue med en choice box der har alle de forskellige directories i sig.
+         */
+        populateMapChoiceList();
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(mapChoices.get(0), mapChoices);
+        dialog.setTitle("Choose a map project");
+        dialog.setHeaderText("Here you can choose one of your map projects!");
+        dialog.setContentText("Choose your map project:");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(e -> loadMapProjectDir(result.get()));
+    }
+
+    private void loadMapProjectDir(String mapProjectDir) {
+        File tmpfile = new File(dirPath).getParentFile();
+        File dir = new File(tmpfile.getAbsolutePath()+ "/Directories/" + mapProjectDir);
+        File[] directoryItems = dir.listFiles();
+        if(directoryItems != null){
+            for(File directoryItem : directoryItems){
+                if(directoryItem.getName().contains("image")){
+                    globalController.setCurrentDestName(mapProjectDir);
+                    loadFile(directoryItem, false);
+                }
+                if(directoryItem.getName().equals("towns.bin")){
+                    try {
+                        loadTowns(directoryItem);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("HEJ!");
+                }
+            }
+        }
+        else{
+            directoryErrorAlert();
+        }
+    }
+
+    private void loadTowns(File townsBin) throws IOException {
+        FileInputStream fis = null;
+        ObjectInputStream ois;
+        fis = new FileInputStream(townsBin);
+        ois = new ObjectInputStream(fis);
+        try{
+            globalController.setTowns((ArrayList<Town>) ois.readObject());
+            globalController.initializeTownSearchBar(townSearchBar);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void populateMapChoiceList() {
+        mapChoices = new ArrayList<>();
+        File tmpfile = new File(dirPath).getParentFile();
+        File dir = new File(tmpfile.getAbsolutePath()+ "/Directories/");
+        System.out.println(dir.getPath());
+        File[] dirListing = dir.listFiles();
+        if(dirListing != null) {
+            for (File file : dirListing) {
+                mapChoices.add(file.getName());
+                System.out.println(file.getName());
+            }
+        }
+        else{
+            directoryErrorAlert();
+
+        }
+    }
+
+    private void directoryErrorAlert() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Missing directories error");
+        alert.setHeaderText("No directories found!");
+        alert.setContentText("There was an error with finding any directory or finding files in the chosen directory!");
+
+        alert.showAndWait();
+    }
+
+    private void MenuNewAction() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.setInitialDirectory(
                 new File(System.getProperty("user.home"))
         );
         File file = fileChooser.showOpenDialog(curStage);
-        if (file != null){
-            openFile(file);
+        if (file != null) {
+            loadFile(file, true);
         }
 
     }
 
-    private void openFile(File file) {
+    private void loadFile(File file, boolean isNewProject) {
         try {
+
             Image image = new Image(file.toURI().toURL().toString(), false);
             imageHeight = image.getHeight();
             imageWidth = image.getWidth();
@@ -253,49 +340,82 @@ public class StartController {
             initiateZoomAndPanImageView();
             initiateCreateOrLookupCoordinate();
             StartLayoutTempLabel.setVisible(false);
+            if(isNewProject) {
+                saveImageToDest(file, makePopupDialog());
+            }
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
 
+    }
 
+    private String makePopupDialog() {
+        TextInputDialog dialog = new TextInputDialog("walter");
+        dialog.setTitle("Name Dialog");
+        dialog.setHeaderText("We're going to save your image as a project!");
+        dialog.setContentText("Please enter your map name:");
+        Optional<String> result = dialog.showAndWait();
+        final String[] returnResult = new String[1];
+        result.ifPresent(name -> returnResult[0] = name.toString());
+        globalController.setCurrentDestName(returnResult[0]);
+        if(result.isPresent()){
+            globalController.setTowns(new ArrayList<>());
+        }
+        return returnResult[0];
     }
 
     private void initiateCreateOrLookupCoordinate() {
         StartLayoutImageView.setOnMouseClicked(e -> {
             Point2D destination = imageViewToImage(StartLayoutImageView, new Point2D(e.getX(), e.getY()));
             if (e.getClickCount() == 2 && setCoordinate) {
-                PixelReader reader = StartLayoutImageView.getImage().getPixelReader();
 
-                int previewWidthHeight = 500;
-                int imageXCoord = (int)destination.getX() - previewWidthHeight/2;
-                int imageYCoord = (int)destination.getY() - previewWidthHeight/2;
-                if(imageXCoord < 0)imageXCoord = 0;
-                if(imageYCoord < 0)imageYCoord = 0;
-                WritableImage previewImage = new WritableImage(reader,imageXCoord,imageYCoord, previewWidthHeight, previewWidthHeight);
-                Town town = new Town(destination, previewImage);
-                globalController.getTownPopupController().createPopup(town);
+                Town town = new Town(new Point2DSerializable(destination));
+                globalController.getTownPopupController().createPopup(town, globalController.createPreviewImage(destination));
                 globalController.getTownPopupController().show();
 
             }
-            if (e.getClickCount() == 2 && readTownNearCursor){
-                if(globalController.getTowns() != null){
+            if (e.getClickCount() == 2 && readTownNearCursor) {
+                if (globalController.getTowns() != null) {
                     double shortestDistance = -1;
                     Town closestTown = null;
-                    for(Town town: globalController.getTowns()){
-                        if(destination.distance(town.getTownCoordinate()) < shortestDistance || shortestDistance == -1){
-                            shortestDistance = destination.distance(town.getTownCoordinate());
+                    for (Town town : globalController.getTowns()) {
+                        if (destination.distance(town.getTownCoordinate().getPoint()) < shortestDistance || shortestDistance == -1) {
+                            shortestDistance = destination.distance(town.getTownCoordinate().getPoint());
                             closestTown = town;
                         }
                     }
-                    globalController.getTownPopupController().createPopup(closestTown);
+                    globalController.getTownPopupController().createPopup(closestTown, globalController.createPreviewImage(closestTown.getTownCoordinate().getPoint()));
                     globalController.getTownPopupController().show();
-
                 }
             }
         });
     }
 
 
+
+
+
+    private void saveImageToDest(File imgSrc, String dest) {
+        try {
+            File tmpFile = new File(dirPath);
+            tmpFile = tmpFile.getParentFile();
+            String file = tmpFile.getAbsolutePath() + "/Directories/";
+            File newDir = new File(file + dest);
+            newDir.mkdir();
+            String[] fileFormat = imgSrc.getPath().split("\\.");
+            System.out.println(fileFormat);
+            File absFile = new File(file + dest + "/image." + fileFormat[1]);
+            Files.copy(imgSrc.toPath(), absFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (
+                FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (
+                IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 }

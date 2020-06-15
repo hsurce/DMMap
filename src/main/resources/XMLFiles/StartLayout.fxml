@@ -4,30 +4,21 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="StartVBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.StartController">
-  <children>
-    <MenuBar fx:id="StartMenuBar" VBox.vgrow="NEVER">
+<AnchorPane prefHeight="840.0" prefWidth="1011.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.StartController">
+   <children>
+    <MenuBar fx:id="StartMenuBar" prefHeight="25.0" prefWidth="1200.0">
       <menus>
         <Menu fx:id="StartMenuFile" mnemonicParsing="false" text="File">
           <items>
             <MenuItem fx:id="MenuNew" mnemonicParsing="false" text="New" />
             <MenuItem fx:id="MenuOpen" mnemonicParsing="false" text="Open…" />
-            <Menu mnemonicParsing="false" text="Open Recent" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem fx:id="MenuClose" mnemonicParsing="false" text="Close" />
             <MenuItem fx:id="MenuSave" mnemonicParsing="false" text="Save" />
-            <MenuItem fx:id="MenuSaveAs" mnemonicParsing="false" text="Save As…" />
-            <MenuItem mnemonicParsing="false" text="Revert" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Preferences…" />
-            <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="MenuQuit" mnemonicParsing="false" text="Quit" />
           </items>
         </Menu>
@@ -38,17 +29,14 @@
         </Menu>
       </menus>
     </MenuBar>
-      <StackPane fx:id="StartLayoutStackPane" prefHeight="150.0" prefWidth="200.0">
-         <children>
-            <ImageView fx:id="StartLayoutImageView" fitHeight="716.0" fitWidth="1000.0" pickOnBounds="true" preserveRatio="true" />
-        <Label fx:id="StartLayoutTempLabel" alignment="CENTER" style="&#10;" text="Choose a new file..." textAlignment="CENTER" textFill="#9f9f9f" wrapText="false">
-          <font>
-            <Font size="18.0" />
-          </font>
-        </Label>
-         </children>
-      </StackPane>
-      <ToggleButton fx:id="StartLayoutToggleSet" mnemonicParsing="false" text="Toggle set new town..." translateX="439.0" />
-      <ToggleButton fx:id="StartLayoutToggleLookup" mnemonicParsing="false" text="Toggle look at nearest town..." translateX="420.0" translateY="5.0" />
-  </children>
-</VBox>
+  <Label fx:id="StartLayoutTempLabel" alignment="CENTER" layoutX="502.0" layoutY="389.0" style="&#10;" text="Choose a new file..." textAlignment="CENTER" textFill="#9f9f9f" wrapText="false">
+    <font>
+      <Font size="18.0" />
+    </font>
+  </Label>
+      <ImageView fx:id="StartLayoutImageView" fitHeight="700.0" fitWidth="1150.0" layoutX="27.0" layoutY="52.0" pickOnBounds="true" preserveRatio="true" />
+      <ToggleButton fx:id="StartLayoutToggleSet" layoutX="511.0" layoutY="759.0" mnemonicParsing="false" text="Toggle set new town..." />
+      <ToggleButton fx:id="StartLayoutToggleLookup" layoutX="492.0" layoutY="793.0" mnemonicParsing="false" text="Toggle look at nearest town..." />
+      <TextField fx:id="townSearchBar" layoutX="1028.0" layoutY="793.0" promptText="Search in towns..." />
+   </children>
+</AnchorPane>

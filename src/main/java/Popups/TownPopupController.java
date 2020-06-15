@@ -6,6 +6,7 @@ import ItemSkeletons.Town;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -74,18 +75,19 @@ public class TownPopupController extends Popup {
                     globalController.addTown(currentTown);
                 }
             }
+            globalController.saveTownsToBin();
 
         });
     }
 
-    public void createPopup(Town town) {
+    public void createPopup(Town town, Image previewImage) {
         currentTown = town;
         /**
          * * HUSK AT CLEAR AL INFORMATION NÅR DENNE FUNKTION BLIVER KALDT SÅ DER IKKE ER POTENTIELT OVERLAP MED FORRIG POPUP!
          */
         TownPopupNameTextField.setText("");
         TownPopupNotesTextArea.setText("");
-        TownPopupImageView.setImage(town.getPreviewImage());
+        TownPopupImageView.setImage(previewImage);
         if(town.getName() != null){
             TownPopupNameTextField.setText(town.getName());
         }

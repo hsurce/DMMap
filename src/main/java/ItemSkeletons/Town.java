@@ -3,27 +3,24 @@ package ItemSkeletons;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Jakob on 6/11/2020.
  */
-public class Town {
-    private Image previewImage;
-    private Point2D townCoordinate;
+public class Town implements Serializable{
+    private Point2DSerializable townCoordinate;
     private String notes;
     private String name;
     private ArrayList<Integer> raceDistribution;
     /**
      * Implementer også environments her!
      */
-    public Town(Point2D townCoordinate, Image previewImage){
+    public Town(Point2DSerializable townCoordinate){
         this.townCoordinate = townCoordinate;
-        this.previewImage = previewImage;
     }
-    public Image getPreviewImage(){
-        return previewImage;
-    }
+
     public String getName(){
         return name;
     }
@@ -38,11 +35,11 @@ public class Town {
     }
 
 
-    public Point2D getTownCoordinate() {
+    public Point2DSerializable getTownCoordinate() {
         return townCoordinate;
     }
 
-    public void setTownCoordinate(Point2D townCoordinate) {
+    public void setTownCoordinate(Point2DSerializable townCoordinate) {
         this.townCoordinate = townCoordinate;
     }
 }

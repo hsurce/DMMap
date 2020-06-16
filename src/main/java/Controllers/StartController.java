@@ -1,5 +1,6 @@
 package Controllers;
 
+import Handlers.FileHandler;
 import ItemSkeletons.Point2DSerializable;
 import ItemSkeletons.Town;
 import javafx.beans.property.DoubleProperty;
@@ -77,11 +78,12 @@ public class StartController {
     private ArrayList<Town> townList;
     private GlobalController globalController;
     private ArrayList<String> mapChoices = new ArrayList<>();
-    private String dirPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+     private FileHandler fileHandler;
 
     public void initialize(Stage stage, GlobalController globalController) {
         curStage = stage;
         this.globalController = globalController;
+        fileHandler = new FileHandler(globalController);
         initiateOnMenuClicked();
         initiateToggleButtons();
         giveReferencesToGlobalController();
@@ -243,79 +245,39 @@ public class StartController {
         /**
          * Popup vindue med en choice box der har alle de forskellige directories i sig.
          */
-        populateMapChoiceList();
+        mapChoices = new ArrayList<>();
+        fileHandler.populateMapChoiceList(mapChoices);
         ChoiceDialog<String> dialog = new ChoiceDialog<>(mapChoices.get(0), mapChoices);
         dialog.setTitle("Choose a map project");
         dialog.setHeaderText("Here you can choose one of your map projects!");
         dialog.setContentText("Choose your map project:");
         Optional<String> result = dialog.showAndWait();
-        result.ifPresent(e -> loadMapProjectDir(result.get()));
-    }
-
-    private void loadMapProjectDir(String mapProjectDir) {
-        File tmpfile = new File(dirPath).getParentFile();
-        File dir = new File(tmpfile.getAbsolutePath()+ "/Directories/" + mapProjectDir);
-        File[] directoryItems = dir.listFiles();
-        if(directoryItems != null){
-            for(File directoryItem : directoryItems){
-                if(directoryItem.getName().contains("image")){
-                    globalController.setCurrentDestName(mapProjectDir);
-                    loadFile(directoryItem, false);
-                }
-                if(directoryItem.getName().equals("towns.bin")){
-                    try {
-                        loadTowns(directoryItem);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        result.ifPresent(e -> {
+            File[] directoryItems = fileHandler.loadMapProjectDir(result.get());
+            if(directoryItems != null){
+                for(File directoryItem : directoryItems){
+                    if(directoryItem.getName().contains("image")){
+                        globalController.setCurrentDestName(result.get());
+                        Image image = fileHandler.loadFile(directoryItem);
+                        handleImage(image, directoryItem, false);
                     }
-                    System.out.println("HEJ!");
+                    if(directoryItem.getName().equals("towns.bin")){
+                        try {
+                            fileHandler.loadTowns(directoryItem);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        System.out.println("HEJ!");
+                    }
                 }
             }
-        }
-        else{
-            directoryErrorAlert();
-        }
-    }
-
-    private void loadTowns(File townsBin) throws IOException {
-        FileInputStream fis = null;
-        ObjectInputStream ois;
-        fis = new FileInputStream(townsBin);
-        ois = new ObjectInputStream(fis);
-        try{
-            globalController.setTowns((ArrayList<Town>) ois.readObject());
-            globalController.initializeTownSearchBar(townSearchBar);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void populateMapChoiceList() {
-        mapChoices = new ArrayList<>();
-        File tmpfile = new File(dirPath).getParentFile();
-        File dir = new File(tmpfile.getAbsolutePath()+ "/Directories/");
-        System.out.println(dir.getPath());
-        File[] dirListing = dir.listFiles();
-        if(dirListing != null) {
-            for (File file : dirListing) {
-                mapChoices.add(file.getName());
-                System.out.println(file.getName());
+            else{
+                fileHandler.directoryErrorAlert();
             }
-        }
-        else{
-            directoryErrorAlert();
 
-        }
+        });
     }
 
-    private void directoryErrorAlert() {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Missing directories error");
-        alert.setHeaderText("No directories found!");
-        alert.setContentText("There was an error with finding any directory or finding files in the chosen directory!");
-
-        alert.showAndWait();
-    }
 
     private void MenuNewAction() {
         FileChooser fileChooser = new FileChooser();
@@ -325,11 +287,25 @@ public class StartController {
         );
         File file = fileChooser.showOpenDialog(curStage);
         if (file != null) {
-            loadFile(file, true);
+            Image image = fileHandler.loadFile(file);
+            handleImage(image, file, true);
         }
 
     }
 
+    private void handleImage(Image image, File file, boolean isNewProject) {
+        imageHeight = image.getHeight();
+        imageWidth = image.getWidth();
+        StartLayoutImageView.setImage(image);
+        initiateZoomAndPanImageView();
+        initiateCreateOrLookupCoordinate();
+        StartLayoutTempLabel.setVisible(false);
+        if(isNewProject) {
+            fileHandler.saveImageToDest(file, makePopupDialog());
+        }
+    }
+
+    /**
     private void loadFile(File file, boolean isNewProject) {
         try {
 
@@ -341,7 +317,7 @@ public class StartController {
             initiateCreateOrLookupCoordinate();
             StartLayoutTempLabel.setVisible(false);
             if(isNewProject) {
-                saveImageToDest(file, makePopupDialog());
+                fileHandler.saveImageToDest(file, makePopupDialog());
             }
 
         } catch (MalformedURLException e) {
@@ -350,6 +326,7 @@ public class StartController {
 
 
     }
+ */
 
     private String makePopupDialog() {
         TextInputDialog dialog = new TextInputDialog("walter");
@@ -397,25 +374,5 @@ public class StartController {
 
 
 
-    private void saveImageToDest(File imgSrc, String dest) {
-        try {
-            File tmpFile = new File(dirPath);
-            tmpFile = tmpFile.getParentFile();
-            String file = tmpFile.getAbsolutePath() + "/Directories/";
-            File newDir = new File(file + dest);
-            newDir.mkdir();
-            String[] fileFormat = imgSrc.getPath().split("\\.");
-            System.out.println(fileFormat);
-            File absFile = new File(file + dest + "/image." + fileFormat[1]);
-            Files.copy(imgSrc.toPath(), absFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (
-                FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (
-                IOException e) {
-            e.printStackTrace();
-        }
 
-
-    }
 }

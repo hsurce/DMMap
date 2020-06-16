@@ -83,15 +83,15 @@ public class GlobalController {
     }
 
     public void updateTownNamesList(){
-        townsNameList = new ArrayList<>();
+        townsNameList.clear();
         for(Town town: towns){
             townsNameList.add(town.getName());
         }
-        bindAutoCompleteTown(townsNameList);
+        //bindAutoCompleteTown(townsNameList);
     }
     public void updateTownNamesList(Town town){
         townsNameList.add(town.getName());
-        bindAutoCompleteTown(townsNameList);
+        //bindAutoCompleteTown(townsNameList);
     }
 
     public ArrayList<String> getTownsNameList(){
@@ -101,12 +101,16 @@ public class GlobalController {
     public void setTownsSearchBar(TextField townsSearchBar){
         this.townsSearchBar = townsSearchBar;
     }
+    public TextField getTownsSearchBar(){
+        return townsSearchBar;
+    }
+
     public void setStartLayoutImageView(ImageView imageView){
         startLayoutImageView = imageView;
     }
 
-    public void initializeTownSearchBar(javafx.scene.control.TextField townSearchBar) {
-        TextFields.bindAutoCompletion(townSearchBar,getTownsNameList());
+    public void initializeTownSearchBar() {
+        //TextFields.bindAutoCompletion(townsSearchBar,getTownsNameList());
         bindAutoCompleteTown(getTownsNameList());
     }
 
@@ -117,6 +121,7 @@ public class GlobalController {
         autoCompletionBindingTown = TextFields.bindAutoCompletion(townsSearchBar, townNames);
         autoCompletionBindingTown.setOnAutoCompleted(event -> {
             getTownPopupController().createPopup(getTown(event.getCompletion()), createPreviewImage(getTown(event.getCompletion()).getTownCoordinate().getPoint()));
+            townsSearchBar.clear();
             getTownPopupController().show();
         });
 

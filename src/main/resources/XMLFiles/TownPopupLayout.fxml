@@ -5,17 +5,16 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.TextFlow?>
 
-<AnchorPane fx:id="TownPopupAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Popups.TownPopupController">
+<AnchorPane fx:id="TownPopupAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Popups.TownPopupController">
    <children>
       <ImageView fx:id="TownPopupImageView" fitHeight="150.0" fitWidth="150.0" layoutX="361.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
       <TextField fx:id="TownPopupNameTextField" layoutX="14.0" layoutY="14.0" maxHeight="1.7976931348623157E308" promptText="Town name..." />
-      <TextArea fx:id="TownPopupNotesTextArea" layoutX="22.0" layoutY="194.0" maxHeight="1000.0" prefHeight="375.0" prefWidth="410.0" promptText="Skriv noter her..." text="&#10;" />
       <Label layoutX="22.0" layoutY="164.0" prefHeight="32.0" prefWidth="77.0" text="Notes">
          <font>
             <Font name="System Bold Italic" size="22.0" />
@@ -57,5 +56,6 @@
           <TableColumn minWidth="0.0" prefWidth="67.0" text="Yield" />
         </columns>
       </TableView>
+      <TextFlow fx:id="TownPopupTextFlow" layoutX="22.0" layoutY="208.0" prefHeight="338.0" prefWidth="406.0" />
    </children>
 </AnchorPane>

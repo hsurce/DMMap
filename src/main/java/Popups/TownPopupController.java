@@ -4,11 +4,14 @@ import Controllers.GlobalController;
 import ItemSkeletons.ResourceYield;
 import ItemSkeletons.Town;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 
@@ -24,7 +27,7 @@ public class TownPopupController extends Popup {
     private TextField TownPopupNameTextField;
 
     @FXML
-    private TextArea TownPopupNotesTextArea;
+    private TextFlow TownPopupTextFlow;
 
     @FXML
     private Button TownPopupAddEnvironmentButton;
@@ -53,6 +56,16 @@ public class TownPopupController extends Popup {
     private Town currentTown;
     private GlobalController globalController;
 
+    /** TODO: 16-06-2020
+     * lav en edit knap der sætter notes i "EDIT" tilstand. Den er i show tilstand fra start af.
+     * Når byen loades eller show tilstand bliver togglet læser den noterne ind og manipulerer teksten efter behov
+     * eksempelvis kan der stå IMG="C:/Path/Til/Billede" og der laves et imageview med det billede i.
+     *
+     *
+     * Hav som udgangspunkt et ScrollPane og populate med labels / imageviews passende til det layout der er skrevet ind i edit text boksen.
+     * Hvis EDIT bliver trykket, (eller population ikke fandt sted) skjul da ScrollPane og indhold og vis TextBox.
+     */
+
     public void initialize(GlobalController globalController){
         this.globalController = globalController;
         super.stage = new Stage();
@@ -68,7 +81,15 @@ public class TownPopupController extends Popup {
             /**
              * Save funktionalitet
              */
-            currentTown.setNotes(TownPopupNotesTextArea.getText());
+            String concatNoteString = "";
+            for(Node node: TownPopupTextFlow.getChildren()){
+                if(node.getClass().equals(TextField.class)){
+                    TextField textField = (TextField)node;
+                    concatNoteString += textField.getText();
+                }
+
+            }
+            currentTown.setNotes(concatNoteString);
             currentTown.setName(TownPopupNameTextField.getText());
             if(globalController.getTowns() != null) {
                 if (!globalController.getTowns().contains(currentTown)) {
@@ -86,13 +107,14 @@ public class TownPopupController extends Popup {
          * * HUSK AT CLEAR AL INFORMATION NÅR DENNE FUNKTION BLIVER KALDT SÅ DER IKKE ER POTENTIELT OVERLAP MED FORRIG POPUP!
          */
         TownPopupNameTextField.setText("");
-        TownPopupNotesTextArea.setText("");
+        TownPopupTextFlow.getChildren().removeAll();
         TownPopupImageView.setImage(previewImage);
         if(town.getName() != null){
             TownPopupNameTextField.setText(town.getName());
         }
         if(town.getNotes() != null){
-            TownPopupNotesTextArea.setText(town.getNotes());
+
+            TownPopupTextFlow.getChildren().add(new Text(town.getNotes()));
         }
 
     }

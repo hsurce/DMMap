@@ -119,7 +119,6 @@ public class StartController {
         ObjectProperty<Point2D> mouseDown = new SimpleObjectProperty<>();
 
         StartLayoutImageView.setOnMousePressed(e -> {
-
             Point2D mousePress = imageViewToImage(StartLayoutImageView, new Point2D(e.getX(), e.getY()));
             mouseDown.set(mousePress);
         });
@@ -363,6 +362,7 @@ public class StartController {
                             closestTown = town;
                         }
                     }
+                    shift(StartLayoutImageView, destination.subtract(closestTown.getTownCoordinate().getPoint()));
                     globalController.getTownPopupController().createPopup(closestTown, globalController.createPreviewImage(closestTown.getTownCoordinate().getPoint()));
                     globalController.getTownPopupController().show();
                 }
